@@ -1,0 +1,84 @@
+.signin{
+    background: url("../../assets/mainBackground.jpg")  no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover; 
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .Link{
+        padding-left: 0.3em;
+    }
+    .signin-body{
+        box-shadow: 1px 1px 20px 1px  rgba(75, 73, 73, 0.357);
+        border-radius: 3%;
+        width: 20%;
+        background-color: rgba(208, 204, 204, 0.708);
+        padding-inline: 2em;
+        h2{
+            text-align: center;
+            text-transform: capitalize; 
+            font-family: serif;
+        }
+        p{
+            text-align: center;
+        }
+        span{
+            display: flex;
+            justify-content: center;
+            margin-block: 0.5em;
+        }
+    }
+    .signin-form-container{
+        .input-field{
+            display: flex;
+            flex-direction: column;
+        }
+        input {
+            height: 2.5em;
+            margin-block: 1em;
+            border: 1px solid rgb(199, 199, 199);
+            border-radius: 10px;
+            padding-left: 1em;
+        }
+        .button-container{
+            display: flex;
+            justify-content: center;
+        }
+        .submit-button {
+            margin-top: 1em;
+            width: 60%;
+            height: 3.3em;
+            border-radius: 10px;
+            border-style: solid;
+            border-width: 1px;
+            border-color: aqua;
+            background-color: #131335;
+            color: white;
+            margin-bottom: 2em;
+            &:hover{
+                cursor: pointer;
+                background-color: #131335df;
+            }
+        }     
+        .google-container{
+            display: flex;
+            justify-content: center;
+            .google{
+            width: fit-content !important;
+            font-size: 16px !important;
+            border-radius: 10px !important;
+            }
+
+            .facebook{
+            margin: 0;
+            width: auto !important;
+            border-radius: 10px !important;
+            }
+        }
+    }
+
+}
