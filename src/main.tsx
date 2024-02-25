@@ -12,9 +12,7 @@ import {store} from './store/Store.tsx'
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <Provider store={store}>
-      <React.StrictMode>
         <App/>
-      </React.StrictMode>
     </Provider>
   </BrowserRouter>
 )
