@@ -1,8 +1,10 @@
 import {type FormEvent, useState} from 'react'
+import {useDispatch} from 'react-redux'
 import {NavLink, Navigate} from 'react-router-dom'
 
-import './SignUp.scss'
-import {StoreUserData} from '../../api/https'
+import './SignUp.styles.scss'
+import {StoreUserData} from '../../api/userData'
+import {setUserId} from '../../store/Authentication'
 import {type UserCredentials} from '../../types/User.types'
 import {createAuthUserWithEmailAndPassword} from '../../utils/firebaseConfig'
 
@@ -17,6 +19,7 @@ const SignUp = () => {
   const [formFields, setFormFields] = useState<UserCredentials>(defaultFormField)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const {email, password} = formFields
+  const dispatch = useDispatch()
 
   const HanldeChange = (event: {target: {name: any, value: any}}) => {
     const {name, value} = event.target
@@ -26,11 +29,14 @@ const SignUp = () => {
   const Handlesubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const response = await createAuthUserWithEmailAndPassword(email, password)
-    const {user} = response
-    await StoreUserData(formFields, user.uid as string)
+    const userId = await createAuthUserWithEmailAndPassword(email, password)
+    dispatch(setUserId(userId as string))
 
-    user && setIsLoggedIn(true)
+    if (userId) {
+      await StoreUserData(formFields, userId as string)
+
+      userId && setIsLoggedIn(true)
+    }
   }
 
   const InputFields = [

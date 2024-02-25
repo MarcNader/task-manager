@@ -7,7 +7,7 @@ import {
   signInWithEmailAndPassword
 } from 'firebase/auth'
 
-import {StoreUserData} from '../api/https'
+import {StoreUserData} from '../api/userData'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCMRHnTZg4fsI_NbWTlf418h_vSstA8XVE',
@@ -34,7 +34,8 @@ export const signInWithGooglePopup = async () => {
   try {
     const response = await signInWithPopup(auth, googleprovider)
     const {_tokenResponse} = response
-    window.localStorage.setItem('isLoggedIn', JSON.stringify(true))
+    const {localId} = _tokenResponse
+    window.localStorage.setItem('user', localId as string)
 
     if (_tokenResponse.isNewUser) {
       const {firstName, lastName, email, localId} = _tokenResponse
@@ -42,9 +43,9 @@ export const signInWithGooglePopup = async () => {
       await StoreUserData(userData, localId as string)
     }
 
-    return response
+    return localId
   } catch (error: any) {
-    alert(error)
+    alert(error.message)
 
     return false
   }
@@ -60,8 +61,9 @@ export const createAuthUserWithEmailAndPassword = async (
 
   try {
     const response = await createUserWithEmailAndPassword(auth, email, password)
+    const {user} = response
 
-    return response
+    return user.uid
   } catch (error: any) {
     if (error.code === 'auth/email-already-in-use') {
       alert('Cannot create user, email already in use!')
@@ -69,7 +71,7 @@ export const createAuthUserWithEmailAndPassword = async (
       return
     }
 
-    alert(error)
+    alert(error.message)
   }
 }
 
@@ -83,9 +85,10 @@ export const signinAuthUserWithEmailAndPassword = async (
 
   try {
     const response = await signInWithEmailAndPassword(auth, email, password)
-    window.localStorage.setItem('isLoggedIn', JSON.stringify(true))
+    const {user} = response
+    window.localStorage.setItem('user', user.uid as string)
 
-    return response
+    return user.uid
   } catch (error: any) {
     if (error.code === 'auth/email-already-in-use') {
       alert('Cannot create user, email already in use!')
@@ -99,6 +102,6 @@ export const signinAuthUserWithEmailAndPassword = async (
       return
     }
 
-    alert(error)
+    alert(error.message)
   }
 }

@@ -1,0 +1,65 @@
+@mixin verticalAlignment {
+    display: flex;
+    flex-direction: column;
+}
+.side-bar{
+    @include verticalAlignment();
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 100vh;
+    padding-inline: 1em;
+    background: url("../../assets/mainBackground.jpg") no-repeat;
+    .header{
+        margin-top: 10%;
+        display: flex;
+        padding-bottom: 2em;
+        .logo-icon{
+            margin-right: 0.3em;
+            width: 30px;
+            padding-bottom: 0.1em;
+            }
+        .logo-title{
+            font-size: 26px;
+            font-family:Tahoma
+        }
+    }
+    .sidebar-body{
+        @include verticalAlignment();
+        gap: 5%;
+    }
+        .sidebar-link{
+            display: flex;
+            align-items: center;
+            padding-block: 0.5em;
+            padding-right: 5em;
+            border-radius: 7px;
+            font-family: system-ui;
+            color: whitesmoke;
+            text-decoration: none;
+
+            &:hover {
+                background-color: rgba(128, 128, 128, 0.641);
+                // background-color: black;
+            }
+
+            &.active {
+                // background-color: #F3F5F8;
+                background-color: rgba(128, 128, 128, 0.641);
+
+            }
+            .logo{
+                width: 20px;
+                margin-right: 5px;
+            }
+        }
+       
+    .sidebar-footer{
+       display: flex;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .hide-side-bar{
+        display: none;
+    }
+}

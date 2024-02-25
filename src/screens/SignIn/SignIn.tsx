@@ -1,9 +1,12 @@
 import {type FormEvent, useState} from 'react'
+import {useDispatch} from 'react-redux'
 import {NavLink, Navigate} from 'react-router-dom'
 import {GoogleLoginButton} from 'react-social-login-buttons'
 
+import './SignIn.styles.scss'
+
+import {setUserId} from '../../store/Authentication'
 import {signInWithGooglePopup, signinAuthUserWithEmailAndPassword} from '../../utils/firebaseConfig'
-import './SignIn.scss'
 
 const SignIn = () => {
   const defaultFormField = {
@@ -13,6 +16,7 @@ const SignIn = () => {
 
   const [formFields, setFormFields] = useState(defaultFormField)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const dispatch = useDispatch()
 
   const HanldeChange = (event: {target: {name: any, value: any}}) => {
     const {name, value} = event.target
@@ -22,13 +26,17 @@ const SignIn = () => {
   const Handlesubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const response = await signinAuthUserWithEmailAndPassword(formFields.email, formFields.password)
-    response && setIsLoggedIn(true)
+    const userId = await signinAuthUserWithEmailAndPassword(formFields.email, formFields.password)
+    dispatch(setUserId(userId as string))
+
+    userId && setIsLoggedIn(true)
   }
 
   const logGoogleUser = async () => {
-    const response = await signInWithGooglePopup()
-    response && setIsLoggedIn(true)
+    const userId = await signInWithGooglePopup()
+    dispatch(setUserId(userId as string))
+
+    userId && setIsLoggedIn(true)
   }
 
   const InputFields = [

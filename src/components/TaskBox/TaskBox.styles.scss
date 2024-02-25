@@ -1,0 +1,104 @@
+
+.taskbox-container{
+width: 250px;
+height: 200px;
+background-color: bisque;
+padding: 1rem;
+position: relative;
+border-radius: 15px;
+}
+h3{ 
+    margin-top: 0.2em;
+    margin-bottom: 0;
+    font-family: system-ui;
+}
+.options-box{
+    display: none;
+    width: 80px;
+    height: 50px;
+    position: absolute;
+    background-color: white;
+    top: 40px;
+    right: 12px;
+    padding: 10px;
+    div{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 50%;
+        &:hover{
+            background-color: #EFF4FA;
+            cursor: pointer;
+        }
+    }
+    .icon{
+        width: 15px;
+        margin-right: 0.5em;
+    }
+}
+.visible{
+    display: block;
+}
+#options{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    &:hover{
+        cursor: pointer;
+    }
+}
+.description{
+    height: 100px;
+    text-overflow: ellipsis;
+    overflow: scroll;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    font-family: arial;
+}
+.description::-webkit-scrollbar{
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: bisque;
+}
+.description::-webkit-scrollbar-thumb{
+    border-radius: .5rem;
+    background-color: #0004;
+    visibility: hidden;
+}
+.description::-webkit-scrollbar-corner{
+    background-color: bisque;
+}
+.description:hover::-webkit-scrollbar-thumb{ 
+    visibility: visible;
+}
+.footer-container{
+    margin-top: 10px;
+    display: flex;
+}
+.footer-field-key{
+font-weight: bold;
+font-family: system-ui;
+}
+.footer-field-value{
+margin-left: 5px;
+font-family: arial;
+display: flex;
+align-items: center;
+}
+.duedate-icon{
+    width: 20px;
+    margin-left: 5px;
+}
+.todo-color{
+color: gray;
+}
+.inprogress-color{
+    color: orange;
+}
+.done-color{
+    color: green;
+}
+// .quill .ql-toolbar .ql-formats .ql-header .ql-picker-label {
+//     font-size: 10px;
+// }

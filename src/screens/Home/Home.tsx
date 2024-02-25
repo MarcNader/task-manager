@@ -1,14 +1,21 @@
-import './Home.scss'
+import {Fragment} from 'react'
+import {Outlet} from 'react-router-dom'
+import './Home.styles.scss'
+
+import NavBar from '../../components/NavBar/NavBar'
+import SideBar from '../../components/SideBar/SideBar'
 
 const Home = () => {
   return (
-
-    <div>
-
-      Home
-      Homeeee
-
-    </div>
+    <Fragment>
+      <div className="wrapper">
+        <SideBar/>
+        <div className="Second-col">
+          <NavBar/>
+          <Outlet/>
+        </div>
+      </div>
+    </Fragment>
   )
 }
 
