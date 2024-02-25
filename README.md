@@ -1,3 +1,32 @@
+# Project Description
+
+This is a task manager website underdevelopment, that will allow users to easily manage their tasks
+
+# Currently Supported Features
+1- Full authentication: create account, sign in and out + sign in with Google
+2- keep user signed in using local storage
+2- Tasks screen:
+    - Easily create new task and update or remove existing one
+    - Filtration by: date and status
+    - Sorting by: date
+
+# Project Structure
+The project is divided into different Folders:
+
+- assets: all logos and images
+- Screens: representing the screens (currently only Tasks working)
+- components: reusable components
+- separate typing files:   
+      - components (Component.types)
+      - redux (Store.types)
+      - entities(Tasks, and any general other entities in the future) 
+      - User ( User related typings) 
+-finally utils: contains configs for firebase along with authentication        
+
+
+
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
