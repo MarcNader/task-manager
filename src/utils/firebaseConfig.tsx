@@ -4,7 +4,8 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  signOut
 } from 'firebase/auth'
 
 import {StoreUserData} from '../api/userData'
@@ -102,6 +103,15 @@ export const signinAuthUserWithEmailAndPassword = async (
       return
     }
 
+    alert(error.message)
+  }
+}
+
+export const signoutUser = async () => {
+  try {
+    await signOut(auth)
+    window.localStorage.removeItem('user')
+  } catch (error: any) {
     alert(error.message)
   }
 }

@@ -4,6 +4,7 @@ import {NavLink, Navigate} from 'react-router-dom'
 import LogoutIcon from '../../assets/logout.png'
 import Rabbit from '../../assets/rabbit2.png'
 import TasksIcon from '../../assets/tasks.png'
+import {signoutUser} from '../../utils/firebaseConfig'
 
 type SideBarProps = {
   fromNavBar?: string
@@ -33,29 +34,30 @@ const SideBar = ({fromNavBar}: SideBarProps) => {
             <img src={TasksIcon} className="logo" />
             Tasks
           </NavLink>
-          <NavLink
-            to={'/ComingSoon'}
-            className="sidebar-link"
-            replace={true}>
+          <div
+            className="sidebar-link">
             <img src={TasksIcon} className="logo" />
             Progress
-          </NavLink>
-          <NavLink to={'ComingSoon'} className="sidebar-link">
+          </div>
+          <div className="sidebar-link">
             <img src={TasksIcon} className="logo" />
             Schedule
-          </NavLink>
-          <NavLink to={'ComingSoon'} className="sidebar-link">
+          </div>
+          <div className="sidebar-link">
             <img src={TasksIcon} className="logo" />
             Theme
-          </NavLink>
+          </div>
         </div>
       </div>
 
       <div className="sidebar-footer">
-        <NavLink to={''} className="sidebar-link">
+        <a
+          href='/'
+          className="sidebar-link"
+          onClick={signoutUser}>
           <img src={LogoutIcon} className="logo"/>
           Logout
-        </NavLink>
+        </a>
       </div>
     </div>
   )

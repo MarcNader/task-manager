@@ -36,23 +36,19 @@
             font-family: system-ui;
             color: whitesmoke;
             text-decoration: none;
-
+            cursor: pointer;
             &:hover {
                 background-color: rgba(128, 128, 128, 0.641);
-                // background-color: black;
             }
 
             &.active {
-                // background-color: #F3F5F8;
                 background-color: rgba(128, 128, 128, 0.641);
-
             }
             .logo{
                 width: 20px;
                 margin-right: 5px;
             }
         }
-       
     .sidebar-footer{
        display: flex;
     }
