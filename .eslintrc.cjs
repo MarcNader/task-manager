@@ -1,4 +1,5 @@
 module.exports = {
+    'trailingSlash': true,
     "env": {
         "browser": true,
         "es2021": true
