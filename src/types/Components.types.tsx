@@ -34,3 +34,8 @@ export type SorterProps = {
   }>
   id: string
 }
+
+
+export type SideBarProps = {
+  fromNavBar?: string
+}

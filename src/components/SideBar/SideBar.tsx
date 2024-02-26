@@ -5,10 +5,7 @@ import LogoutIcon from '../../assets/logout.png'
 import Rabbit from '../../assets/rabbit2.png'
 import TasksIcon from '../../assets/tasks.png'
 import {signoutUser} from '../../utils/firebaseConfig'
-
-type SideBarProps = {
-  fromNavBar?: string
-}
+import { SideBarProps } from '../../types/Components.types'
 
 const SideBar = ({fromNavBar}: SideBarProps) => {
   const isfromNavBar = fromNavBar

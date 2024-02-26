@@ -80,5 +80,41 @@
             }
         }
     }
+}
 
+@media screen and (min-width:  315px) and (max-width:  640px) {
+    .signin{
+        h1{
+            font-size: 22px;
+        }
+        .signin-form-container{
+            input{
+                height: 2em;
+            }
+        }
+        .signin-body{
+            width: 60%;
+            margin-inline: 2em;
+        }
+        .Link{
+            margin-top: 0.3em;
+            display: block;
+        }
+    }
+}
+
+@media screen and (min-width:  640px) and (max-width:  1367px){
+    .signup-container{
+        h1{
+            font-size: 30px;
+        }
+        .signin-body{
+            width: 40%;
+            margin-inline: 2em;
+        }
+        .Link{
+            margin-top: 0.3em;
+            display: block;
+        }
+    }
 }
