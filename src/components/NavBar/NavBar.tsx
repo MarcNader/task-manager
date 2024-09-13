@@ -1,62 +1,53 @@
-import './NavBar.styles.scss'
-import {Drawer} from '@mui/material'
-import {useEffect, useState} from 'react'
+import "./NavBar.styles.scss";
+import { Drawer } from "@mui/material";
+import { useEffect, useState } from "react";
 
-import DropDown from '../../assets/dropdown.png'
-import ProfilePicture from '../../assets/profile.png'
-import SideBar from '../SideBar/SideBar'
+import DropDown from "../../assets/icons/dropdown.png";
+import ProfilePicture from "../../assets/icons/profile.png";
+import SideBar from "../SideBar/SideBar";
 
 const NavBar = () => {
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth)
-  const [isVisivle, setIsVisible] = useState(false)
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  const [isVisivle, setIsVisible] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
-      setScreenWidth(window.innerWidth)
-    }
+      setScreenWidth(window.innerWidth);
+    };
 
-    window.addEventListener('resize', handleResize)
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [])
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const openDrawer = () => {
-    setIsVisible(true)
-  }
+    setIsVisible(true);
+  };
 
   const CloseDrawer = () => {
-    setIsVisible(false)
-  }
+    setIsVisible(false);
+  };
 
   return (
     <div className="navbar">
-      <Drawer
-        open={isVisivle}
-        onClose={CloseDrawer}
-        anchor='left'>
-        <SideBar fromNavBar='fromNavBar'/>
+      <Drawer open={isVisivle} onClose={CloseDrawer} anchor="left">
+        <SideBar fromNavBar="fromNavBar" />
       </Drawer>
-      {
-        screenWidth < 701 && (
-          <div onClick={openDrawer} className='drop-down-container'>
-            <img
-              src={DropDown}
-              width={'20px'}
-              className='dropdwon-icon'
-            />
-          </div>
-        )
-      }
+      {screenWidth < 701 && (
+        <div onClick={openDrawer} className="drop-down-container">
+          <img src={DropDown} width={"20px"} className="dropdwon-icon" />
+        </div>
+      )}
       <img
         src={ProfilePicture}
         alt="no dp"
         className="profile-picture"
-        width={'50px'}
+        width={"50px"}
       />
     </div>
-  )
-}
+  );
+};
 
-export default NavBar
+export default NavBar;
