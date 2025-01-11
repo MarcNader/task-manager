@@ -1,105 +1,228 @@
-import {type FormEvent, useState} from 'react'
-import {useDispatch} from 'react-redux'
-import {NavLink, Navigate} from 'react-router-dom'
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { NavLink, Navigate } from "react-router-dom";
+import Rabbit from "../../assets/icons/rabbit2.png";
+import Google from "../../assets/icons/google.png";
+import Facebook from "../../assets/icons/facebook.png";
+import Email from "../../assets/icons/email.png";
+import Password from "../../assets/icons/password.png";
+import { useFormik } from "formik";
 
-import './SignUp.styles.scss'
-import {StoreUserData} from '../../api/userData'
-import {setUserId} from '../../store/Authentication'
-import {type UserCredentials} from '../../types/User.types'
-import {createAuthUserWithEmailAndPassword} from '../../utils/firebaseConfig'
+import { setUserId } from "../../store/Authentication";
+import {
+  createAuthUserWithEmailAndPassword,
+  signInWithFacebookPopup,
+  signInWithGooglePopup,
+} from "../../utils/firebaseConfig";
+import { InputAdornment, TextField, useMediaQuery } from "@mui/material";
+import { signUpSchema } from "../../helpers/formValidations/authenticationValidation";
+import { StoreUserData } from "../../api/userData";
+import Overlay from "../../components/Overlay/Overlay";
 
 const SignUp = () => {
-  const defaultFormField: UserCredentials = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: ''
-  }
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isloading, setISLoading] = useState(false);
 
-  const [formFields, setFormFields] = useState<UserCredentials>(defaultFormField)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const {email, password} = formFields
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const HanldeChange = (event: {target: {name: any, value: any}}) => {
-    const {name, value} = event.target
-    setFormFields({...formFields, [name]: value})
-  }
+  const formik = useFormik({
+    initialValues: {
+      userName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    validationSchema: signUpSchema,
+    onSubmit: async (values) => {
+      setISLoading(true);
+      const userId = await createAuthUserWithEmailAndPassword(
+        values.email,
+        values.password
+      );
 
-  const Handlesubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+      if (userId) {
+        await StoreUserData(values, userId as string);
+        dispatch(setUserId(userId as string));
 
-    const userId = await createAuthUserWithEmailAndPassword(email, password)
-    dispatch(setUserId(userId as string))
+        userId && setIsLoggedIn(true);
+      }
+      setISLoading(false);
+    },
+  });
 
-    if (userId) {
-      await StoreUserData(formFields, userId as string)
+  const logGoogleUser = async () => {
+    setISLoading(true);
+    const userId = await signInWithGooglePopup();
+    setISLoading(false);
 
-      userId && setIsLoggedIn(true)
-    }
-  }
+    dispatch(setUserId(userId as string));
+
+    userId && setIsLoggedIn(true);
+  };
+  const logFacebookUser = async () => {
+    setISLoading(true);
+    const userId = await signInWithFacebookPopup();
+    setISLoading(false);
+    dispatch(setUserId(userId as string));
+
+    userId && setIsLoggedIn(true);
+  };
 
   const InputFields = [
     {
-      label: 'First Name',
-      type: 'text',
-      name: 'firstName'
+      label: "User Name",
+      id: "userName",
+      placeholder: "John Kennedy",
+      icon: Email,
+      value: formik.values.userName,
+      touched: formik.touched.userName,
+      error: formik.errors.userName,
     },
     {
-      label: 'Last Name',
-      type: 'text',
-      name: 'lastName'
+      label: "Email",
+      id: "email",
+      placeholder: "example@gmail.com",
+      icon: Email,
+      value: formik.values.email,
+      touched: formik.touched.email,
+      error: formik.errors.email,
     },
     {
-      label: 'Email',
-      type: 'email',
-      name: 'email'
+      label: "Password",
+      id: "password",
+      placeholder: "test1234",
+      icon: Password,
+      value: formik.values.password,
+      touched: formik.touched.password,
+      error: formik.errors.password,
     },
     {
-      label: 'Password',
-      type: 'password',
-      name: 'password'
-    }
-  ]
+      label: "Confirm Password",
+      id: "confirmPassword",
+      icon: Password,
+      value: formik.values.confirmPassword,
+      touched: formik.touched.confirmPassword,
+      error: formik.errors.confirmPassword,
+    },
+  ];
 
+  const isPhone = useMediaQuery("(min-width:600px)");
   return (
-    <div className="signup-container">
-      <div className="signup-body">
-        <h2>Get Started</h2>
-        <p>
-          Already have an account?
-          <NavLink
-            to={'/SignIn'}
-            className="Link">
-            Sign in
-          </NavLink>
-        </p>
-        <div className="form-container">
-          {isLoggedIn && (
-          <Navigate to="/" replace={true}/>
-          )}
-          <form onSubmit={Handlesubmit}>
-            {InputFields.map((field, index) => {
-              return (
-                <div key={index} className='input-field'>
-                  <label style={{textAlign: 'left'}}>{field.label}</label>
-                  <input
-                    type={field.type}
-                    required
-                    onChange={HanldeChange}
-                    name={field.name}
-                  />
-                </div>
-              )
-            })
-            }
-            <div className='button-container'>
-              <button className="submit-button" type="submit">Sign Up</button>
-            </div>
-          </form>
+    <div className="flex lg:flex-row flex-col h-screen grow justify-center items-center">
+      <Overlay isVisible={isloading} />
+      <div className="flex flex-col lg:w-1/2 w-full h-full box-border p-8 ">
+        {/* Header */}
+        <div className="hidden lg:flex">
+          <img
+            src={Rabbit}
+            className="w-[30px] md:w-[55px]"
+            alt="none found to display"
+          />
+          <div className="text-[24px] md:text-[40px] font-['Tahoma']">
+            TaskRabbit
+          </div>
+        </div>
+        {/* Body */}
+        <div className="flex flex-col items-center h-full justify-center gap-10 overflow-auto ">
+          <h2 className="text-center capitalize font-serif md:text-2xl text-xl pt-4 landscape:text-lg ">
+            Welcome to TaskRabbit!
+          </h2>
+          <p className="text-gray-500 text-sm text-center w-full sm:w-3/4 md:text-base landscape:text-center">
+            Managing your tasks have never been easier, SignUp now to kick start
+            your journey!
+          </p>
+          <p className="text-gray-500 text-sm text-center w-full sm:w-3/4 md:text-base">
+            Already have an account ? then
+            <NavLink
+              to={"/SignIn"}
+              className="Link ms-1 underline text-blue-600"
+            >
+              Sign In
+            </NavLink>
+          </p>
+
+          <div className="signin-form-container w-full landscape:w-2/3">
+            {isLoggedIn && <Navigate to="/" replace={true} />}
+            <form onSubmit={formik.handleSubmit} className="flex flex-col">
+              <div className="flex flex-col gap-6 items-center">
+                {InputFields.map((field, index) => {
+                  const isPassword =
+                    field.id === "password" || field.id === "confirmPassword"
+                      ? "password"
+                      : "text";
+
+                  return (
+                    <div className="w-3/4 lg:w-[60%] md:w-1/2">
+                      <TextField
+                        id={field.id}
+                        label={field.label}
+                        placeholder={field.placeholder}
+                        key={index}
+                        className="w-full"
+                        size={isPhone ? "medium" : "small"}
+                        required
+                        type={isPassword}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <img
+                                src={field.icon}
+                                className="logo-icon"
+                                alt="none found to display"
+                                width={30}
+                                height={30}
+                              />
+                            </InputAdornment>
+                          ),
+                        }}
+                        value={field.value}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur} // On blur event to validate after leaving field
+                        error={field.touched && Boolean(field.error)}
+                        helperText={field.touched && field.error}
+                      />
+                    </div>
+                  );
+                })}
+                <button
+                  className="primary-button w-[110px] md:w-[150px] lg:w-[180px] md:h-12"
+                  type="submit"
+                >
+                  Sign Up
+                </button>
+              </div>
+            </form>
+          </div>
+          <span className="text-gray-500">Or sign up with</span>
+          <div className="flex justify-center w-full">
+            <button
+              className="flex flex-row justify-center  w-2/4 md:w-[180px] h-10 md:h-12 items-center  border-[1.5px] rounded-3xl border-solid mr-5 hover:bg-gray-100"
+              onClick={logGoogleUser}
+            >
+              <img
+                src={Google}
+                className="w-[30px] md:w-[30px] pr-2"
+                alt="none found to display"
+              />
+              Google
+            </button>
+            <button
+              className="flex flex-row justify-center w-2/4 md:w-[180px] h-10 md:h-12 items-center  border-[1.5px] rounded-3xl border-solid hover:bg-gray-100"
+              onClick={logFacebookUser}
+            >
+              <img
+                src={Facebook}
+                className="w-[30px] pr-2"
+                alt="none found to display"
+              />
+              Facebook
+            </button>
+          </div>
         </div>
       </div>
-    </div>)
-}
+      <div className="lg:w-1/2 lg:block hidden w-full h-full bg-cover bg-no-repeat bg-[url('assets/pictures/mainBackground.jpg')]" />
+    </div>
+  );
+};
 
-export default SignUp
+export default SignUp;
