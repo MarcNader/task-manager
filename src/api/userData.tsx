@@ -1,30 +1,24 @@
-import axios from 'axios'
-
-const URL = 'https://task-manager-116de-default-rtdb.europe-west1.firebasedatabase.app/'
-
-export const StoreUserData = async (data: any, userId: string) => {
+import { auth } from "../utils/firebaseConfig";
+import firebaseAxios from "../utils/axiosClient";
+export const StoreUserData = async (data: any) => {
   try {
-    data.userId = userId
-    window.localStorage.setItem('user', userId)
-
-    const response = await axios.post(URL + '/Users.json', data)
-
-    return response
+    const user = auth.currentUser;
+    if (!user) throw new Error("No logged-in user");
+    const response = await firebaseAxios.put(`/Users/${user.uid}.json`, data);
+    return response.data;
   } catch (error: any) {
-    alert(error.message)
+    alert(error.message);
   }
-}
+};
 
-export const FetchUserData = async (userId: string) => {
+export const FetchUserData = async () => {
   try {
-    const response = await axios.get(URL + '/Users.json')
-
-    for (const key in response.data) {
-      if (userId === response.data[key].userId) {
-        return response.data[key]
-      }
-    }
+    const user = auth.currentUser;
+    if (!user) throw new Error("No logged-in user");
+    if (!user.uid) throw new Error("No user ID provided!");
+    const { data } = await firebaseAxios.get(`/Users/${user.uid}.json`);
+    return data;
   } catch (error: any) {
-    alert(error.message)
+    alert(error.message);
   }
-}
+};

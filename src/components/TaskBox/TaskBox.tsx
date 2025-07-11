@@ -1,98 +1,80 @@
-import "./TaskBox.styles.scss";
-import { useState } from "react";
-
-import { deleteTask, editTask } from "../../api/tasksData";
-import DeleteIcon from "../../assets/icons/delete.png";
-import DueDateIcon from "../../assets/icons/due-date.png";
-import EditIcon from "../../assets/icons/edit.png";
-import { type TaskBoxProps } from "../../types/Components.types";
-import "react-quill/dist/quill.snow.css";
-import { type Task } from "../../types/Tasks.types";
+import { useRef, useState } from "react";
 import TaskEditorPopup from "../TaskEditorPopup/TaskEditorPopup";
+import Overlay from "../Overlay/Overlay";
+import { type TaskBoxProps } from "../../types/Components.types";
+import { type Task } from "../../types/Tasks.types";
+import DropdownMenu from "../DropDownMenu.tsx/DropDownMenu.tsx";
+import { getStatusColor } from "../../helpers/getStatus/statusUtils.ts";
+import DueDateIcon from "../../assets/icons/due-date.png";
+import { useTasks } from "../../hooks/useTasks.ts";
+const TaskBox: React.FC<TaskBoxProps> = ({ fields }) => {
+  const [isDropdownVisible, setDropdownVisible] = useState(false);
+  const [isEditorVisible, setEditorVisible] = useState(false);
+  const iconRef = useRef<HTMLImageElement>(null);
+  const { TriggerDeleteTask, TriggerEditTask, isLoading } = useTasks(fields);
 
-const TaskBox = ({ fields }: TaskBoxProps) => {
-  const [optionsVisible, setOptionsVisible] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-
-  const showOptions = () => {
-    setOptionsVisible(!optionsVisible);
+  const toggleDropdown = () => {
+    setDropdownVisible((prev) => !prev);
+  };
+  const openEditor = () => {
+    setEditorVisible(true);
+    setDropdownVisible(false);
   };
 
-  const onEditClicked = () => {
-    setIsVisible(true);
-    setOptionsVisible(false);
+  const handleDelete = async () => {
+    setDropdownVisible(false);
+    TriggerDeleteTask(fields);
   };
 
-  const onDeleteClicked = async () => {
-    setOptionsVisible(false);
-    await deleteTask(fields.id);
-    window.location.reload();
-  };
-
-  const onSave = async (values: Task) => {
-    if (values.title === "") {
-      alert("title is a required field, cannot be left empty");
-
+  const handleSave = (values: Task) => {
+    if (!values.title.trim() || !values.description.trim()) {
+      alert("Title and description cannot be empty.");
       return;
     }
 
-    if (values.description === "") {
-      alert("Description is a required field, cannot be left empty");
-
-      return;
-    }
-
-    await editTask(values.id, values);
-    setIsVisible(false);
-    window.location.reload();
+    TriggerEditTask(values);
+    setEditorVisible(false);
   };
-
-  const statusColor =
-    fields.status === "To Do"
-      ? "footer-field-value todo-color"
-      : fields.status === "In Progress"
-      ? "footer-field-value inprogress-color"
-      : "footer-field-value done-color";
 
   return (
-    <div className="taskbox-container">
+    <div className="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1rem)] xl:w-[calc(25%-1rem)] bg-white p-4 relative rounded-[15px] dark:bg-dark-900 dark:text-dark-50">
+      <Overlay isVisible={isLoading} />
       <TaskEditorPopup
         defaultValues={fields}
         buttonName="Edit"
-        isVisible={isVisible}
-        setIsVisible={setIsVisible}
-        onSubmit={async (values: Task) => {
-          await onSave(values);
-        }}
+        isVisible={isEditorVisible}
+        setIsVisible={setEditorVisible}
+        onSubmit={handleSave}
       />
-      <div className={optionsVisible ? "options-box visible" : "options-box"}>
-        <div onClick={onEditClicked}>
-          <img src={EditIcon} className="icon" />
-          Edit
-        </div>
-        <div onClick={onDeleteClicked}>
-          <img src={DeleteIcon} className="icon" />
-          delete
-        </div>
-      </div>
-      <div id="options" onClick={showOptions}>
+      <DropdownMenu
+        isVisible={isDropdownVisible}
+        onEdit={openEditor}
+        onDelete={handleDelete}
+        onClose={() => setDropdownVisible(false)}
+        iconRef={iconRef}
+      />
+      <div
+        ref={iconRef}
+        className="justify-self-end cursor-pointer"
+        onClick={toggleDropdown}
+      >
         ...
       </div>
       <h3>{fields.title}</h3>
       <div
-        className="description"
+        className="h-[100px] overflow-scroll text-ellipsis line-clamp-4 font-[arial]"
         dangerouslySetInnerHTML={{ __html: fields.description }}
       ></div>
-      <div className="footer-container">
-        <span className="footer-field-key">Due Date:</span>
-        <span className="footer-field-value">
+      <div className="flex mt-3">
+        <span className="font-bold">Due Date:</span>
+        <span className="ml-2 font-[arial] flex items-center">
           {fields.date}
-          <img src={DueDateIcon} className="duedate-icon" />
+          <img src={DueDateIcon} className="w-[20px] ml-2" />
         </span>
       </div>
-      <div className="footer-container">
-        <span className="footer-field-key">Status:</span>
-        <span className={statusColor}>{fields.status}</span>
+      <div className="pt-2 flex">
+        <span className="font-bold">Status:</span>
+        <span className={getStatusColor(fields.status)}>{fields.status}</span>
       </div>
     </div>
   );

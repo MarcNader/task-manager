@@ -1,22 +1,24 @@
-import {Fragment} from 'react'
-import {Outlet} from 'react-router-dom'
-import './Home.styles.scss'
+import { Fragment } from "react";
+import { Outlet } from "react-router-dom";
+import "./Home.styles.scss";
 
-import NavBar from '../../components/NavBar/NavBar'
-import SideBar from '../../components/SideBar/SideBar'
+import NavBar from "../../components/NavBar/NavBar";
+import SideBar from "../../components/SideBar/SideBar";
 
 const Home = () => {
   return (
     <Fragment>
       <div className="wrapper">
-        <SideBar/>
+        <SideBar />
         <div className="Second-col">
-          <NavBar/>
-          <Outlet/>
+          <NavBar />
+          <div className="flex-1  rounded-md">
+            <Outlet />
+          </div>
         </div>
       </div>
     </Fragment>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

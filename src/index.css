@@ -11,5 +11,9 @@ body{
 }
 
 .primary-button{
-  @apply items-center h-10 bg-[#131335] text-white border-[2px] border-blue-400 rounded-lg border-solid hover:bg-[#131335df]
+  @apply items-center h-10  text-white border-[2px] rounded-lg border-solid bg-[#2A9D8F] hover:bg-[#21867b]
+}
+
+.secondary-button{
+  @apply items-center h-10  text-black border-[2px] rounded-lg border-solid bg-white hover:text-[#21867b] hover:border-[#21867b] border-gray-300
 }

@@ -1,52 +1,48 @@
-import axios from 'axios'
+import { v4 as uuidv4 } from "uuid";
 
-import {type Task} from '../types/Tasks.types'
+import { type Task } from "../types/Tasks.types";
+import { store } from "../store/Store";
+import { auth } from "../utils/firebaseConfig";
+import firebaseAxios from "../utils/axiosClient";
 
-const URL = 'https://task-manager-116de-default-rtdb.europe-west1.firebasedatabase.app/'
-
-export const createTask = async (data: any, userId: string) => {
+export const createTask = async (task: Task) => {
   try {
-    data.userId = userId
-
-    const response = await axios.post(URL + '/Tasks.json', data)
-
-    return response
+    const uid = auth.currentUser?.uid;
+    const taskId = uuidv4(); // Generate a unique task ID
+    const newTask = { ...task, id: taskId }; // include id inside data
+    await firebaseAxios.put(`/Tasks/${uid}/${taskId}.json`, newTask);
   } catch (error: any) {
-    alert(error.message)
+    alert(error.message);
   }
-}
+};
 
-export const getTasks = async (userId: string) => {
+export const getTasks = async () => {
   try {
-    const response = await axios.get(URL + '/Tasks.json')
-    const tasks = []
-
-    for (const key in response.data) {
-      if (userId === response.data[key].userId) {
-        // delete response.data[key].userId
-        response.data[key].id = key
-        tasks.push(response.data[key])
-      }
-    }
-
-    return tasks
+    const uid = auth.currentUser?.uid;
+    const { data } = await firebaseAxios.get(`/Tasks/${uid}.json`);
+    return data
+      ? Object.entries(data).map(([id, task]) => ({ id, ...(task as Task) }))
+      : [];
   } catch (error: any) {
-    alert(error.message)
+    alert(error.message);
+    return [];
   }
-}
+};
 
-export const editTask = async (taskId: string, data: Task) => {
+export const editTask = async (task: Task) => {
+  const { userId } = store.getState().authentication;
   try {
-    await axios.put(URL + `/Tasks/${taskId}.json`, data)
+    await firebaseAxios.put(`/Tasks/${userId}/${task.id}.json`, task);
   } catch (error: any) {
-    alert(error.message)
+    alert(error.message);
   }
-}
+};
 
 export const deleteTask = async (taskId: string) => {
+  const { userId } = store.getState().authentication;
   try {
-    await axios.delete(URL + `/Tasks/${taskId}.json`)
+    await firebaseAxios.delete(`/Tasks/${userId}/${taskId}.json`);
   } catch (error: any) {
-    alert(error.message)
+    alert(error.message);
   }
-}
+};

@@ -7,6 +7,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   FacebookAuthProvider,
+  User,
+  onAuthStateChanged,
 } from "firebase/auth";
 
 import { StoreUserData } from "../api/userData";
@@ -24,21 +26,23 @@ const firebaseConfig = {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const firebaseapp = initializeApp(firebaseConfig);
-const googleprovider = new GoogleAuthProvider();
+export const auth = getAuth();
+
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: "select_account" });
+
 const facebookProvider = new FacebookAuthProvider();
 
-googleprovider.setCustomParameters({
-  prompt: "select_account",
-});
+let currentUser: User | null = null;
 
-export const auth = getAuth();
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+});
 
 export const signInWithGooglePopup = async () => {
   try {
-    const response = await signInWithPopup(auth, googleprovider);
+    const response = await signInWithPopup(auth, googleProvider);
     const { _tokenResponse } = response;
-    const { localId } = _tokenResponse;
-    window.localStorage.setItem("user", localId as string);
 
     if (_tokenResponse.isNewUser) {
       const { firstName, lastName, email, localId } = _tokenResponse;
@@ -46,7 +50,7 @@ export const signInWithGooglePopup = async () => {
       await StoreUserData(userData, localId as string);
     }
 
-    return localId;
+    return response.user.uid;
   } catch (error: any) {
     alert(error.message);
 
@@ -56,10 +60,7 @@ export const signInWithGooglePopup = async () => {
 export const signInWithFacebookPopup = async () => {
   try {
     const response = await signInWithPopup(auth, facebookProvider);
-    console.log("Facebook response", response);
     const { _tokenResponse } = response;
-    const { localId } = _tokenResponse;
-    window.localStorage.setItem("user", localId as string);
 
     if (_tokenResponse.isNewUser) {
       const { firstName, lastName, email, localId } = _tokenResponse;
@@ -67,7 +68,7 @@ export const signInWithFacebookPopup = async () => {
       await StoreUserData(userData, localId as string);
     }
 
-    return localId;
+    return response.user.uid;
   } catch (error: any) {
     alert(error.message);
 
@@ -89,16 +90,13 @@ export const createAuthUserWithEmailAndPassword = async (
       email,
       password
     );
-    const { user } = response;
-
-    return user.uid;
+    return response.user.uid;
   } catch (error: any) {
     if (error.code === "auth/email-already-in-use") {
       alert("Cannot create user, email already in use!");
 
       return;
     }
-
     alert(error.message);
   }
 };
@@ -113,10 +111,8 @@ export const signinAuthUserWithEmailAndPassword = async (
 
   try {
     const response = await signInWithEmailAndPassword(auth, email, password);
-    const { user } = response;
-    window.localStorage.setItem("user", user.uid as string);
 
-    return user.uid;
+    return response.user.uid;
   } catch (error: any) {
     if (error.code === "auth/email-already-in-use") {
       alert("Cannot create user, email already in use!");
@@ -137,8 +133,11 @@ export const signinAuthUserWithEmailAndPassword = async (
 export const signoutUser = async () => {
   try {
     await signOut(auth);
-    window.localStorage.removeItem("user");
   } catch (error: any) {
     alert(error.message);
   }
+};
+
+export const getCurrentUser = (): User | null => {
+  return auth.currentUser ?? currentUser;
 };

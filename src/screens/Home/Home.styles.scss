@@ -1,11 +1,11 @@
-.wrapper{
-    height: 100vh;
+.wrapper {
+  height: 100vh;
+  display: flex;
+  background-color: #2a9d8f;
+  .Second-col {
     display: flex;
-    background-color: #1B193E;
-    .Second-col{
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            overflow: scroll;
-    }
+    flex-direction: column;
+    flex: 1;
+    overflow: scroll;
+  }
 }

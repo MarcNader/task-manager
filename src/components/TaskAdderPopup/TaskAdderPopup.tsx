@@ -5,6 +5,7 @@ import ReactQuill from "react-quill";
 import { type TaskAdderPopupProps } from "../../types/Components.types";
 import "./TaskAdderPopup.styles.scss";
 import { type Task } from "../../types/Tasks.types";
+import "react-quill/dist/quill.snow.css";
 
 const TaskAdderPopup = ({
   isVisible,
@@ -28,13 +29,15 @@ const TaskAdderPopup = ({
     <Modal
       isOpen={isVisible}
       onRequestClose={closeModal}
-      className="custom-Adder-modal"
+      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[60%] h-[550px] border border-gray-300 bg-white overflow-scroll rounded-[15px] outline-none"
     >
-      <div className="task-add-container">
-        <label htmlFor="title">Title:</label>
+      <div className="p-8 h-full flex flex-col">
+        <label htmlFor="title" className="mb-2">
+          Title:
+        </label>
         <input
           name="title"
-          className="inputField"
+          className="mb-8 w-fit border-[1px] border-gray-400 rounded-md"
           defaultValue={values.title}
           onChange={(e) => {
             setValues({
@@ -44,8 +47,8 @@ const TaskAdderPopup = ({
           }}
         />
 
-        <label>Description:</label>
-        <div className="quill-container contents">
+        <label className="mb-2">Description:</label>
+        <div className="pb-16 max-h-[250px] contents">
           <ReactQuill
             theme="snow"
             value={values.description}
@@ -55,14 +58,16 @@ const TaskAdderPopup = ({
                 description: value,
               });
             }}
-            className="popup-add-quill"
+            className="h-[250px] mb-16"
           />
         </div>
-        <label htmlFor="date">date:</label>
+        <label htmlFor="date" className="mb-2">
+          date:
+        </label>
         <div>
           <input
             type="date"
-            className="inputField"
+            className="mb-8 w-fit border-[1px] border-gray-400 rounded-md"
             defaultValue={values.date}
             onChange={(e) => {
               setValues({
@@ -72,10 +77,12 @@ const TaskAdderPopup = ({
             }}
           />
         </div>
-        <label htmlFor="status">status:</label>
+        <label htmlFor="status" className="mb-2">
+          status:
+        </label>
         <div>
           <select
-            className="inputField"
+            className="mb-8 w-fit border-[1px] border-gray-400 rounded-md"
             defaultValue={values.status}
             onChange={(e) => {
               setValues({
@@ -89,16 +96,27 @@ const TaskAdderPopup = ({
             <option value="Done">Done</option>
           </select>
         </div>
-        <div className="popup-buttons-container">
+        <div className="flex justify-end">
           <button
-            className="button"
+            className="primary-button mr-4 px-4 !h-12"
             onClick={() => {
               onSubmit(values);
+              setValues({
+                id: "",
+                title: "",
+                description: "",
+                date: "",
+                status: "To Do",
+              });
+              setIsVisible(false);
             }}
           >
             {buttonName}
           </button>
-          <button className="button cancel-button" onClick={closeModal}>
+          <button
+            className="secondary-button px-4 py-2 !h-12"
+            onClick={closeModal}
+          >
             Cancel
           </button>
         </div>

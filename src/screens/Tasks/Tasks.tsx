@@ -1,229 +1,115 @@
 import { Drawer } from "@mui/material";
-import moment from "moment";
-import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-
-import { createTask, getTasks } from "../../api/tasksData";
+import { useEffect, useState } from "react";
 import FilterIcon from "../../assets/icons/filter.png";
 import Filter from "../../components/Filter/Filter";
 import Sorter from "../../components/Sorter/Sorter";
 import TaskAdderPopup from "../../components/TaskAdderPopup/TaskAdderPopup";
 import TaskBox from "../../components/TaskBox/TaskBox";
-import { type MainState } from "../../store/Store";
-import { type Task } from "../../types/Tasks.types";
-import "./Tasks.styles.scss";
+import Overlay from "../../components/Overlay/Overlay";
+import { useTasks } from "../../hooks/useTasks";
+import { useFilters } from "../../hooks/useFilters";
+import { MainState } from "../../store/Store";
+import { Task } from "../../types/Tasks.types";
 
 const Tasks = () => {
-  const userID = useSelector((state: MainState) => state.authentication.userId);
-  const [tasks, setTasks] = useState<Task[]>();
-  const [filteredTasks, setFilteredTasks] = useState<Task[]>();
+  const tasks = useSelector((state: MainState) => state.tasksData.tasks);
+  const { isLoading, TriggerCreateTask } = useTasks();
+
   const [isVisible, setIsVisible] = useState(false);
-  const [status, setStatus] = useState("");
-  const [openDrawer, setopenDrawer] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await getTasks(userID);
-      setTasks(response);
-      setFilteredTasks(response);
-    };
+    setFilteredTasks(tasks);
+  }, [tasks]);
 
-    void fetchData();
-  }, []);
+  const { applyDateFilter, applyStatusFilter, sortBy } = useFilters(
+    tasks,
+    setFilteredTasks
+  );
 
-  const onAddClicked = () => {
-    setIsVisible(true);
-  };
-
-  const addTask = async (values: Task) => {
-    if (values.title === "") {
-      alert("title is a required field, cannot be left empty");
-
-      return;
-    }
-
-    if (values.description === "") {
-      alert("Description is a required field, cannot be left empty");
-
-      return;
-    }
-
-    await createTask(values, userID);
-    setIsVisible(false);
-    window.location.reload();
-  };
-
-  const applyDateFilter = (value: string) => {
-    const today = moment();
-
-    const filteredData = tasks?.filter((item) => {
-      const itemDate = moment(item.date);
-      switch (value) {
-        case "none":
-          return item;
-        case "today":
-          return itemDate.isSame(today, "day");
-        case "thisWeek":
-          return itemDate.isSame(today, "week");
-        case "thisMonth":
-          return itemDate.isSame(today, "month");
-        default:
-          return false;
-      }
-    });
-    setFilteredTasks(filteredData);
-  };
-
-  const applyStatusFilter = (value: string) => {
-    if (value === "none") {
-      setFilteredTasks(tasks);
-      setStatus(value);
-
-      return;
-    }
-
-    const filteredData = tasks?.filter((item) => item.status === value);
-    setStatus(value);
-    setFilteredTasks(filteredData);
-  };
-
-  const sortBy = (value: string) => {
-    if (value === "none") return;
-
-    const sortedTasks = [...(filteredTasks ?? [])].sort((item1, item2) => {
-      const moment1 = moment(item1.date);
-      const moment2 = moment(item2.date);
-
-      return value === "dateAscending"
-        ? moment1.diff(moment2)
-        : moment2.diff(moment1);
-    });
-    setFilteredTasks(sortedTasks);
-  };
+  const onAddClicked = () => setIsVisible(true);
+  const showDrawer = () => setOpenDrawer(true);
+  const closeDrawer = () => setOpenDrawer(false);
 
   const dateOptions = [
-    {
-      value: "none",
-      text: "Select Date:",
-    },
-    {
-      value: "today",
-      text: "Today",
-    },
-    {
-      value: "thisWeek",
-      text: "This Week",
-    },
-    {
-      value: "thisMonth",
-      text: "This Month",
-    },
+    { value: "none", text: "Select Date:" },
+    { value: "today", text: "Today" },
+    { value: "thisWeek", text: "This Week" },
+    { value: "thisMonth", text: "This Month" },
   ];
 
   const statusOptions = [
-    {
-      value: "none",
-      text: "Select Status:",
-    },
-    {
-      value: "To Do",
-      text: "To Do",
-    },
-    {
-      value: "In Progress",
-      text: "In Progress",
-    },
-    {
-      value: "Done",
-      text: "Done",
-    },
+    { value: "none", text: "Select Status:" },
+    { value: "To Do", text: "To Do" },
+    { value: "In Progress", text: "In Progress" },
+    { value: "Done", text: "Done" },
   ];
 
   const sortingOptions = [
-    {
-      value: "none",
-      text: "Sort By:",
-    },
-    {
-      value: "dateAscending",
-      text: "Date - Ascending",
-    },
-    {
-      value: "dateDescending",
-      text: "Date - Descending",
-    },
+    { value: "none", text: "Sort By:" },
+    { value: "dateAscending", text: "Date - Ascending" },
+    { value: "dateDescending", text: "Date - Descending" },
   ];
 
-  const showDrawer = () => {
-    setopenDrawer(true);
-  };
-
-  const CloseDrawer = () => {
-    setopenDrawer(false);
-  };
-
   return (
-    <div className="tasks-container">
-      <Drawer open={openDrawer} onClose={CloseDrawer} anchor="right">
-        <div className="filters-container">
-          <h2>Filters</h2>
-          <div>
-            <label>Date Filter:</label>
-            <Filter
-              applyFilter={(value) => {
-                applyDateFilter(value);
-              }}
-              options={dateOptions}
-              id="date"
-            />
-          </div>
-          <div id="status-filter">
-            <label>Status Filter:</label>
-            <Filter
-              applyFilter={(value) => {
-                applyStatusFilter(value);
-              }}
-              options={statusOptions}
-              id="status"
-            />
-          </div>
-        </div>
-      </Drawer>
+    <div className="h-full p-4 overflow-scroll bg-[#f7f7f7] rounded-md dark:bg-dark-400">
+      <Overlay isVisible={isLoading} />
       <TaskAdderPopup
         isVisible={isVisible}
         setIsVisible={setIsVisible}
         buttonName="Create"
-        onSubmit={async (values: Task) => {
-          await addTask(values);
-        }}
+        onSubmit={TriggerCreateTask}
       />
-      <div className="header">
-        <div className="first-section">
-          <div className="filters-button" onClick={showDrawer}>
+      <Drawer open={openDrawer} onClose={closeDrawer} anchor="right">
+        <div className="flex flex-col p-8">
+          <h2 className="font-system">Filters</h2>
+          <Filter
+            applyFilter={applyDateFilter}
+            options={dateOptions}
+            id="date"
+            customStyle="mb-5"
+          />
+          <label>Status Filter:</label>
+          <Filter
+            applyFilter={applyStatusFilter}
+            options={statusOptions}
+            id="status"
+          />
+        </div>
+      </Drawer>
+      <div className="border-b border-gray-300 shadow-md rounded-lg py-1 px-4 flex justify-between items-center dark:bg-dark-800">
+        <div className="flex">
+          <div
+            className="flex items-center cursor-pointer hover:text-black/50"
+            onClick={showDrawer}
+          >
             <span>
-              <strong>Filter</strong>
+              <label className="text-black dark:text-dark-50">Filter</label>
             </span>
             <img
               src={FilterIcon}
-              width={"15px"}
-              style={{ width: "15px", marginInline: "5px" }}
+              width="15px"
+              style={{ marginInline: "5px" }}
             />
           </div>
           <Sorter id="sorting" options={sortingOptions} sortBy={sortBy} />
         </div>
-        <div></div>
-        <button className="add-button" onClick={onAddClicked}>
+        <button
+          className="primary-button h-[2.3em] w-[6em] rounded-lg border border-solid  text-white hover:cursor-pointer dark:text-dark-50 dark:bg-dark-600 "
+          onClick={onAddClicked}
+        >
           Add
         </button>
       </div>
-      {status && status !== "none" && (
-        <h2 className="section-header">{status}</h2>
+      {filteredTasks.length > 0 && (
+        <div className="flex flex-wrap gap-5 mt-4">
+          {filteredTasks.map((task, id) => (
+            <TaskBox fields={task} key={task.id} />
+          ))}
+        </div>
       )}
-      <div className="todo-list">
-        {filteredTasks?.map((task) => (
-          <TaskBox fields={task} key={task.id} />
-        ))}
-      </div>
     </div>
   );
 };

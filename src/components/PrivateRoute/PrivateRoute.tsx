@@ -1,18 +1,21 @@
-import {useDispatch} from 'react-redux'
-import {Navigate, Outlet} from 'react-router-dom'
-
-import {setUserId} from '../../store/Authentication'
+import { useSelector } from "react-redux";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { MainState } from "../../store/Store";
 
 const PrivateRoute = () => {
-  const dispatch = useDispatch()
-  const user = window.localStorage.getItem('user')
-  user && dispatch(setUserId(user))
+  const location = useLocation(); // Get current location
+  const userID = useSelector((state: MainState) => state.authentication.userId);
 
-  return (
-    user
-      ? <Outlet/>
-      : <Navigate to={'/SignIn'}/>
-  )
-}
+  if (!userID) {
+    return <Navigate to="/SignIn" />;
+  }
 
-export default PrivateRoute
+  // If the user is logged in and on "/", redirect to "/Tasks"
+  return location.pathname === "/" ? (
+    <Navigate to="/Tasks" replace />
+  ) : (
+    <Outlet />
+  );
+};
+
+export default PrivateRoute;

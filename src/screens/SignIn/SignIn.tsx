@@ -30,7 +30,6 @@ const SignIn = () => {
     },
     validationSchema: loginSchema,
     onSubmit: async (values) => {
-      console.log("Form values", values);
       setISLoading(true);
       const userId = await signinAuthUserWithEmailAndPassword(
         values.email,
@@ -130,7 +129,7 @@ const SignIn = () => {
                         className="w-full"
                         size={isPhone ? "medium" : "small"}
                         required
-                        type={field.label === "password" ? "password" : "text"}
+                        type={field.id === "password" ? "password" : "text"}
                         InputProps={{
                           endAdornment: (
                             <InputAdornment position="end">

@@ -108,10 +108,9 @@ const SignUp = () => {
 
   const isPhone = useMediaQuery("(min-width:600px)");
   return (
-    <div className="flex lg:flex-row flex-col h-screen grow justify-center items-center">
+    <div className="flex lg:flex-row flex-col min-h-screen sm:h-screen grow justify-center items-center">
       <Overlay isVisible={isloading} />
-      <div className="flex flex-col lg:w-1/2 w-full h-full box-border p-8 ">
-        {/* Header */}
+      <div className="flex flex-col w-full lg:w-1/2 h-full  box-border p-8 overflow-auto ">
         <div className="hidden lg:flex">
           <img
             src={Rabbit}
@@ -122,9 +121,8 @@ const SignUp = () => {
             TaskRabbit
           </div>
         </div>
-        {/* Body */}
-        <div className="flex flex-col items-center h-full justify-center gap-10 overflow-auto ">
-          <h2 className="text-center capitalize font-serif md:text-2xl text-xl pt-4 landscape:text-lg ">
+        <div className="flex flex-col items-center h-screen justify-center gap-10 ">
+          <h2 className="text-center capitalize font-serif md:text-2xl text-xl pt-4 ">
             Welcome to TaskRabbit!
           </h2>
           <p className="text-gray-500 text-sm text-center w-full sm:w-3/4 md:text-base landscape:text-center">
@@ -150,7 +148,6 @@ const SignUp = () => {
                     field.id === "password" || field.id === "confirmPassword"
                       ? "password"
                       : "text";
-
                   return (
                     <div className="w-3/4 lg:w-[60%] md:w-1/2">
                       <TextField
